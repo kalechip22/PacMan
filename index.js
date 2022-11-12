@@ -20,7 +20,7 @@ class Boundary {
 	}
 }
 
-/* Create class for Pac-Man player */
+/* Create class for PacMan player */
 class Player {
 	constructor({position, velocity}) {
 		this.position = position;
@@ -43,6 +43,23 @@ class Player {
 	}
 }
 
+/* Create class for PacMan pellets */
+class Pellet {
+	constructor({position, velocity}) {
+		this.position = position;
+		this.radius = 3;
+	}
+
+	draw() {
+		c.beginPath();
+		c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+		c.fillStyle = 'yellow';
+		c.fill();
+		c.closePath();
+	}
+}
+
+const pellets = [];
 const boundaries = [];
 
 /* Create new player and track x, y, and velocity values */
@@ -76,37 +93,37 @@ const keys = {
 let lastKey = ' ';
 
 /* Map converted into symbols */
-// const map = [
-// 	['1', '-', '-', '-', '-', '-', '-', '-', '-', '-', '2'],
-// 	['|', '.', '.', '.', '.', '.', '.', '.', '.', '.', '|'],
-// 	['|', '.', 'b', '.', '[', '7', ']', '.', 'b', '.', '|'],
-// 	['|', '.', '.', '.', '.', '_', '.', '.', '.', '.', '|'],
-// 	['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
-// 	['|', '.', '.', '.', '.', '^', '.', '.', '.', '.', '|'],
-// 	['|', '.', 'b', '.', '[', '+', ']', '.', 'b', '.', '|'],
-// 	['|', '.', '.', '.', '.', '_', '.', '.', '.', '.', '|'],
-// 	['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
-// 	['|', '.', '.', '.', '.', '^', '.', '.', '.', '.', '|'],
-// 	['|', '.', 'b', '.', '[', '5', ']', '.', 'b', '.', '|'],
-// 	['|', '.', '.', '.', '.', '.', '.', '.', '.', 'p', '|'],
-// 	['4', '-', '-', '-', '-', '-', '-', '-', '-', '-', '3']
-// ]
-
 const map = [
 	['1', '-', '-', '-', '-', '-', '-', '-', '-', '-', '2'],
-	['|', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|'],
-	['|', ' ', 'b', ' ', '[', '7', ']', ' ', 'b', ' ', '|'],
-	['|', ' ', ' ', ' ', ' ', '_', ' ', ' ', ' ', ' ', '|'],
-	['|', ' ', '[', ']', ' ', ' ', ' ', '[', ']', ' ', '|'],
-	['|', ' ', ' ', ' ', ' ', '^', ' ', ' ', ' ', ' ', '|'],
-	['|', ' ', 'b', ' ', '[', '+', ']', ' ', 'b', ' ', '|'],
-	['|', ' ', ' ', ' ', ' ', '_', ' ', ' ', ' ', ' ', '|'],
-	['|', ' ', '[', ']', ' ', ' ', ' ', '[', ']', ' ', '|'],
-	['|', ' ', ' ', ' ', ' ', '^', ' ', ' ', ' ', ' ', '|'],
-	['|', ' ', 'b', ' ', '[', '5', ']', ' ', 'b', ' ', '|'],
-	['|', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'p', '|'],
+	['|', '.', '.', '.', '.', '.', '.', '.', '.', '.', '|'],
+	['|', '.', 'b', '.', '[', '7', ']', '.', 'b', '.', '|'],
+	['|', '.', '.', '.', '.', '_', '.', '.', '.', '.', '|'],
+	['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
+	['|', '.', '.', '.', '.', '^', '.', '.', '.', '.', '|'],
+	['|', '.', 'b', '.', '[', '+', ']', '.', 'b', '.', '|'],
+	['|', '.', '.', '.', '.', '_', '.', '.', '.', '.', '|'],
+	['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
+	['|', '.', '.', '.', '.', '^', '.', '.', '.', '.', '|'],
+	['|', '.', 'b', '.', '[', '5', ']', '.', 'b', '.', '|'],
+	['|', '.', '.', '.', '.', '.', '.', '.', '.', 'p', '|'],
 	['4', '-', '-', '-', '-', '-', '-', '-', '-', '-', '3']
 ]
+
+// const map = [
+// 	['1', '-', '-', '-', '-', '-', '-', '-', '-', '-', '2'],
+// 	['|', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|'],
+// 	['|', ' ', 'b', ' ', '[', '7', ']', ' ', 'b', ' ', '|'],
+// 	['|', ' ', ' ', ' ', ' ', '_', ' ', ' ', ' ', ' ', '|'],
+// 	['|', ' ', '[', ']', ' ', ' ', ' ', '[', ']', ' ', '|'],
+// 	['|', ' ', ' ', ' ', ' ', '^', ' ', ' ', ' ', ' ', '|'],
+// 	['|', ' ', 'b', ' ', '[', '+', ']', ' ', 'b', ' ', '|'],
+// 	['|', ' ', ' ', ' ', ' ', '_', ' ', ' ', ' ', ' ', '|'],
+// 	['|', ' ', '[', ']', ' ', ' ', ' ', '[', ']', ' ', '|'],
+// 	['|', ' ', ' ', ' ', ' ', '^', ' ', ' ', ' ', ' ', '|'],
+// 	['|', ' ', 'b', ' ', '[', '5', ']', ' ', 'b', ' ', '|'],
+// 	['|', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'p', '|'],
+// 	['4', '-', '-', '-', '-', '-', '-', '-', '-', '-', '3']
+// ]
 
 /* Set correct pipe connector image to image object */
 function createImage(src) {
@@ -298,103 +315,19 @@ map.forEach((row, i) => {
 					})
 				)
 			break
-			// case '.':
-			// 	pellets.push(
-			// 		new Pellet({
-			// 			position: {
-			// 				x: j * Boundary.width + Boundary.width / 2,
-			// 				y: i * Boundary.height + Boundary.height / 2
-			// 			}
-			// 		})
-			// 	)
-			// break
+			case '.':
+				pellets.push(
+					new Pellet({
+						position: {
+							x: j * Boundary.width + Boundary.width / 2,
+							y: i * Boundary.height + Boundary.height / 2
+						}
+					})
+				)
+			break
 		}
 	})
 })
-
-// map.forEach((row, i) => {
-// 	row.forEach((symbol, j) => {
-// 		switch(symbol) {
-// 			case '-':
-// 				boundaries.push(
-// 					new Boundary ({
-// 						position: {
-// 							x: Boundary.width * j,
-// 							y: Boundary.height * i
-// 						},
-// 						image: createImage('./img/pipeHorizontal.png')
-// 					})
-// 				)
-// 				break;
-// 			case '|':
-// 				boundaries.push(
-// 					new Boundary ({
-// 						position: {
-// 							x: Boundary.width * j,
-// 							y: Boundary.height * i
-// 						},
-// 						image: createImage('./img/pipeVertical.png')
-// 					})
-// 				)
-// 				break;
-// 			case '1':
-// 				boundaries.push(
-// 					new Boundary ({
-// 						position: {
-// 							x: Boundary.width * j,
-// 							y: Boundary.height * i
-// 						},
-// 						image: createImage('./img/pipeCorner1.png')
-// 					})
-// 				)
-// 				break;
-// 			case '2':
-// 				boundaries.push(
-// 					new Boundary ({
-// 						position: {
-// 							x: Boundary.width * j,
-// 							y: Boundary.height * i
-// 						},
-// 						image: createImage('./img/pipeCorner2.png')
-// 					})
-// 				)
-// 				break;
-// 			case '3':
-// 				boundaries.push(
-// 					new Boundary ({
-// 						position: {
-// 							x: Boundary.width * j,
-// 							y: Boundary.height * i
-// 						},
-// 						image: createImage('./img/pipeCorner3.png')
-// 					})
-// 				)
-// 				break;
-// 			case '4':
-// 				boundaries.push(
-// 					new Boundary ({
-// 						position: {
-// 							x: Boundary.width * j,
-// 							y: Boundary.height * i
-// 						},
-// 						image: createImage('./img/pipeCorner4.png')
-// 					})
-// 				)
-// 				break;
-// 			case 'b':
-// 				boundaries.push(
-// 					new Boundary ({
-// 						position: {
-// 							x: Boundary.width * j,
-// 							y: Boundary.height * i
-// 						},
-// 						image: createImage('./img/block.png')
-// 					})
-// 				)
-// 				break;
-// 		}
-// 	})
-// })
 
 function circleCollidesWithRectangle({
 	circle,
@@ -504,6 +437,27 @@ function animate() {
 		}
 	}
 
+	/* Draw each pellet and detect if player eats pellet */
+	/* Run through pellets array backwards to stop flashes from rendering */
+	for (let i = pellets.length - 1; 0 < i; i--) {
+		const pellet = pellets[i];
+		pellet.draw();
+
+		/* Calculate collision between pellets and player */
+		if (
+			Math.hypot(
+				pellet.position.x - player.position.x, pellet.position.y - player.position.y
+			) <
+			pellet.radius + player.radius
+		) {
+			/* Removes pellet at index i */
+			pellets.splice(i, 1);
+		}
+
+	}
+
+
+	/* Draw and detect each boundary */
 	boundaries.forEach((boundary) => {
 		boundary.draw();
 
