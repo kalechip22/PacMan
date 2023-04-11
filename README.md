@@ -1,5 +1,5 @@
 # PacMan
-<img src="cover_img/pacman2.jpg" alt="pacman_logo" width="700"/>
+<img src="cover_img/pacman2.jpg" alt="pacman_logo" width="600"/>
 
 ## Description
 A recreation of the class game Pac-Man using HTML/CSS and JavaScript.
